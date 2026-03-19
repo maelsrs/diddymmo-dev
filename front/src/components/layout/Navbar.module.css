@@ -1,0 +1,141 @@
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  padding: 20px 0;
+  transition: all 0.4s var(--ease-out);
+}
+
+.scrolled {
+  background: rgba(250, 248, 245, 0.85);
+  backdrop-filter: blur(16px);
+  padding: 12px 0;
+  box-shadow: 0 1px 0 var(--border);
+}
+
+.inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.links {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  list-style: none;
+}
+
+.link {
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+  position: relative;
+  transition: color 0.3s var(--ease-out);
+}
+
+.link::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 1.5px;
+  background: var(--accent);
+  transition: width 0.4s var(--ease-out);
+}
+
+.link:hover,
+.active {
+  color: var(--text-primary);
+}
+
+.link:hover::after,
+.active::after {
+  width: 100%;
+}
+
+.loginBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--text-primary);
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: var(--text-primary);
+  transition: all 0.3s var(--ease-out);
+}
+
+.loginBtn:hover {
+  background: var(--text-primary);
+  color: #ffffff;
+}
+
+.hamburger {
+  display: none;
+  color: var(--text-primary);
+}
+
+.mobileLogin {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .hamburger {
+    display: flex;
+    align-items: center;
+    z-index: 1001;
+  }
+
+  .loginBtn {
+    display: none;
+  }
+
+  .mobileLogin {
+    display: block;
+    padding-top: 16px;
+  }
+
+  .mobileLogin .loginBtn {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .links {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--bg-primary);
+    flex-direction: column;
+    justify-content: center;
+    gap: 24px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s var(--ease-out);
+    z-index: 999;
+  }
+
+  .links.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .link {
+    font-size: 1.2rem;
+  }
+}

@@ -1,0 +1,18 @@
+:root {
+  --bg-primary: #f7f8fa;
+  --bg-white: #ffffff;
+  --bg-dark: #1e2a3a;
+  --text-primary: #1e2a3a;
+  --text-secondary: #44546a;
+  --text-muted: #7a8699;
+  --accent: #4a7fb5;
+  --accent-hover: #3b6a9c;
+  --border: rgba(74, 127, 181, 0.1);
+  --border-medium: #c5ced8;
+  --font-display: 'Fraunces', serif;
+  --font-body: 'DM Sans', sans-serif;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --radius-pill: 100px;
+  --radius-card: 16px;
+  --radius-input: 14px;
+}

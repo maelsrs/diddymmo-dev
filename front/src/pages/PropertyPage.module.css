@@ -1,0 +1,32 @@
+.breadcrumb {
+  padding-top: 90px;
+  padding-bottom: 8px;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  transition: color 0.3s var(--ease-out);
+}
+
+.backLink:hover {
+  color: var(--accent);
+}
+
+.notFound {
+  padding: 200px 0;
+  text-align: center;
+}
+
+.notFound h1 {
+  font-size: 2rem;
+  margin-bottom: 12px;
+}
+
+.notFound p {
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+}

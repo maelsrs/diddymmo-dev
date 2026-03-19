@@ -1,0 +1,99 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum Rank {
+  USER
+  EMPLOYEE
+  ADMINISTRATOR
+}
+
+enum ListingType {
+  LOCATION
+  ACHAT
+}
+
+enum PropertyType {
+  APPARTEMENT
+  MAISON
+}
+
+enum HeatingType {
+  INDIVIDUEL_GAZ
+  INDIVIDUEL_ELECTRIQUE
+  COLLECTIF
+  POMPE_A_CHALEUR
+  AUTRE
+}
+
+enum DpeGrade {
+  A
+  B
+  C
+  D
+  E
+  F
+  G
+}
+
+enum FurnishedStatus {
+  MEUBLE
+  NON_MEUBLE
+}
+
+model User {
+  id               String       @id @default(uuid()) @map("_id")
+  email            String       @unique
+  name             String
+  password         String
+  rank             Rank         @default(USER)
+  ownedRealEstate  String[]     @default([])
+  assignedListings RealEstate[] @relation("ContactEmployee")
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+}
+
+model RealEstate {
+  id                String          @id @default(uuid()) @map("_id")
+
+  listingType       ListingType
+  propertyType      PropertyType
+
+  surface           Float
+  rooms             Int
+  floor             Int?
+  constructionYear  Int
+  heatingType       HeatingType
+  furnished         FurnishedStatus @default(NON_MEUBLE)
+
+  dpe               DpeGrade
+  ges               DpeGrade
+
+  price             Float
+  charges           Float?
+
+  address           String
+  street            String
+  quarter           String
+  city              String
+  zipCode           String
+  nearTransport     Boolean         @default(false)
+  transportDetails  String?
+
+  availableFrom     DateTime
+  accessiblePMR     Boolean         @default(false)
+  hasElevator       Boolean         @default(false)
+
+  images            String[]        @default([])
+
+  contactId         String
+  contact           User            @relation("ContactEmployee", fields: [contactId], references: [id])
+
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+}

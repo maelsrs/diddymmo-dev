@@ -1,0 +1,32 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 0.72rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+.input {
+  padding: 14px 18px;
+  border: none;
+  border-radius: var(--radius-input);
+  background: var(--bg-white);
+  color: var(--text-primary);
+  font-size: 0.88rem;
+  outline: none;
+  transition: box-shadow 0.3s var(--ease-out);
+}
+
+.input::placeholder {
+  color: var(--text-muted);
+}
+
+.input:focus {
+  box-shadow: 0 0 0 2px rgba(74, 127, 181, 0.3);
+}
