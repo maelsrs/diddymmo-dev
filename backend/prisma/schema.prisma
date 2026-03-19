@@ -51,11 +51,20 @@ model User {
   email            String       @unique
   name             String
   password         String
+  emailVerified    Boolean      @default(false)
   rank             Rank         @default(USER)
   ownedRealEstate  String[]     @default([])
   assignedListings RealEstate[] @relation("ContactEmployee")
   createdAt        DateTime     @default(now())
   updatedAt        DateTime     @updatedAt
+}
+
+model VerificationCode {
+  id        String   @id @default(uuid()) @map("_id")
+  email     String
+  code      String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
 }
 
 model RealEstate {

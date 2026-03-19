@@ -10,7 +10,8 @@
   },
   "dependencies": {
     "@prisma/client": "5.22.0",
-    "elysia": "latest"
+    "elysia": "latest",
+    "resend": "^6.9.4"
   },
   "devDependencies": {
     "bun-types": "latest",
