@@ -1,6 +1,10 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+let resend: Resend;
+function getResend() {
+  if (!resend) resend = new Resend(process.env.RESEND_API_KEY);
+  return resend;
+}
 
 const FROM_EMAIL = "Diddymmo <diddymo@lsblk2exa.beauty>";
 
@@ -9,7 +13,7 @@ export function generateCode(): string {
 }
 
 export async function sendVerificationEmail(to: string, code: string) {
-  return resend.emails.send({
+  return getResend().emails.send({
     from: FROM_EMAIL,
     to,
     subject: "Votre code de vérification Diddymmo",

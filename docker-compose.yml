@@ -1,0 +1,39 @@
+services:
+  mongo:
+    image: mongo:7
+    container_name: diddymmo-mongo
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: diddymmo
+      MONGO_INITDB_ROOT_PASSWORD: diddymmo
+    volumes:
+      - mongo-data:/data/db
+      - mongo-keyfile:/opt/keyfile
+    entrypoint: >
+      bash -c '
+        openssl rand -base64 756 > /opt/keyfile/rs.key
+        chmod 400 /opt/keyfile/rs.key
+        chown 999:999 /opt/keyfile/rs.key
+        exec docker-entrypoint.sh mongod --replSet rs0 --bind_ip_all --keyFile /opt/keyfile/rs.key
+      '
+    healthcheck:
+      test: ["CMD", "mongosh", "-u", "diddymmo", "-p", "diddymmo", "--authenticationDatabase", "admin", "--eval", "db.runCommand('ping').ok"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  mongo-init:
+    image: mongo:7
+    depends_on:
+      mongo:
+        condition: service_healthy
+    restart: "no"
+    entrypoint: >
+      mongosh --host mongo -u diddymmo -p diddymmo --authenticationDatabase admin --eval '
+        try { rs.initiate({ _id: "rs0", members: [{ _id: 0, host: "localhost:27017" }] }) } catch(e) { rs.status() }
+      '
+
+volumes:
+  mongo-data:
+  mongo-keyfile:

@@ -7,6 +7,9 @@ import Rent from './pages/Rent';
 import Sell from './pages/Sell';
 import Contact from './pages/Contact';
 import PropertyPage from './pages/PropertyPage';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import VerifyEmail from './pages/VerifyEmail';
 
 export default function App() {
   return (
@@ -20,21 +23,11 @@ export default function App() {
           <Route path="/vendre" element={<Sell />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/bien/:id" element={<PropertyPage />} />
-          <Route path="/connexion" element={<Placeholder title="Connexion" />} />
-          <Route path="/inscription" element={<Placeholder title="Inscription" />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/verify" element={<VerifyEmail />} />
         </Route>
       </Routes>
     </BrowserRouter>
-  );
-}
-
-function Placeholder({ title }: { title: string }) {
-  return (
-    <div style={{ paddingTop: 200, textAlign: 'center', minHeight: '60vh' }}>
-      <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '2rem', marginBottom: 12 }}>
-        {title}
-      </h1>
-      <p style={{ color: 'var(--text-muted)' }}>Cette page sera disponible prochainement.</p>
-    </div>
   );
 }

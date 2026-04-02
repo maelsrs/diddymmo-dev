@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { User, Menu, X } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { User, Menu, X, LogOut } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import styles from './Navbar.module.css';
 
 const links = [
@@ -15,6 +16,8 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -25,6 +28,11 @@ export default function Navbar() {
   useEffect(() => {
     setMenuOpen(false);
   }, [location]);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
   return (
     <nav className={`${styles.navbar} ${scrolled ? styles.scrolled : ''}`}>
@@ -45,17 +53,36 @@ export default function Navbar() {
             </li>
           ))}
           <li className={styles.mobileLogin}>
-            <Link to="/connexion" className={styles.loginBtn}>
-              <User size={16} />
-              Connexion
-            </Link>
+            {user ? (
+              <div className={styles.mobileUser}>
+                <span className={styles.userName}>{user.name}</span>
+                <button onClick={handleLogout} className={styles.logoutBtnMobile}>
+                  <LogOut size={16} />
+                  Déconnexion
+                </button>
+              </div>
+            ) : (
+              <Link to="/login" className={styles.loginBtn}>
+                <User size={16} />
+                Connexion
+              </Link>
+            )}
           </li>
         </ul>
 
-        <Link to="/connexion" className={styles.loginBtn} aria-label="Connexion">
-          <User size={16} />
-          Connexion
-        </Link>
+        {user ? (
+          <div className={styles.userMenu}>
+            <span className={styles.userName}>{user.name}</span>
+            <button onClick={handleLogout} className={styles.logoutBtn} aria-label="Déconnexion">
+              <LogOut size={16} />
+            </button>
+          </div>
+        ) : (
+          <Link to="/login" className={styles.loginBtn} aria-label="Connexion">
+            <User size={16} />
+            Connexion
+          </Link>
+        )}
 
         <button
           className={styles.hamburger}
