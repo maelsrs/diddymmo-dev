@@ -1,9 +1,10 @@
-import { useState, useRef, type FormEvent, type KeyboardEvent, type ClipboardEvent } from 'react';
+import { useState, useRef, useEffect, type FormEvent, type KeyboardEvent, type ClipboardEvent } from 'react';
 import { useLocation, useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import styles from './Auth.module.css';
 
 const LEN = 6;
+const COOLDOWNS = [30, 60, 120];
 
 export default function VerifyEmail() {
   const { verify, resendCode } = useAuth();
@@ -14,7 +15,15 @@ export default function VerifyEmail() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [resent, setResent] = useState(false);
+  const [cooldown, setCooldown] = useState(COOLDOWNS[0]);
+  const [sendCount, setSendCount] = useState(0);
   const refs = useRef<(HTMLInputElement | null)[]>([]);
+
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const id = setInterval(() => setCooldown(c => c - 1), 1000);
+    return () => clearInterval(id);
+  }, [cooldown > 0]);
 
   if (!email) return <Navigate to="/register" replace />;
 
@@ -53,8 +62,17 @@ export default function VerifyEmail() {
   const handleResend = async () => {
     setResent(false);
     const res = await resendCode(email);
-    if (res.error) setError(res.error);
-    else { setResent(true); setError(''); }
+    if (res.error) {
+      setError(res.error);
+      if (res.retryAfter) setCooldown(res.retryAfter);
+    } else {
+      setResent(true);
+      setError('');
+      const newCount = sendCount + 1;
+      setSendCount(newCount);
+      const tier = Math.min(newCount, COOLDOWNS.length - 1);
+      setCooldown(res.retryAfter ?? COOLDOWNS[tier]);
+    }
   };
 
   return (
@@ -96,9 +114,13 @@ export default function VerifyEmail() {
 
         <p className={styles.footer}>
           Pas reçu le code ?{' '}
-          <button type="button" onClick={handleResend} className={styles.footerLink}>
-            Renvoyer
-          </button>
+          {cooldown > 0 ? (
+            <span className={styles.cooldown}>Renvoyer dans {cooldown}s</span>
+          ) : (
+            <button type="button" onClick={handleResend} className={styles.footerLink}>
+              Renvoyer
+            </button>
+          )}
         </p>
       </div>
     </div>

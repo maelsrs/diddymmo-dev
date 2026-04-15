@@ -10,7 +10,7 @@ interface User {
   rank: string;
 }
 
-type AuthResult = { error?: string; needsVerification?: boolean; email?: string };
+type AuthResult = { error?: string; needsVerification?: boolean; email?: string; retryAfter?: number };
 
 interface AuthState {
   user: User | null;
@@ -83,8 +83,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const resendCode = async (email: string): Promise<AuthResult> => {
     const { ok, data } = await api('/auth/send-code', { email });
-    if (!ok) return { error: data.error };
-    return {};
+    if (!ok) return { error: data.error, retryAfter: data.retryAfter };
+    return { retryAfter: data.retryAfter };
   };
 
   return (

@@ -4,8 +4,33 @@ import prisma from "../lib/prisma";
 import { generateCode, sendVerificationEmail } from "../lib/resend";
 
 const CODE_TTL = 10 * 60 * 1000; // 10 min
+const RATE_LIMITS = [30, 60, 120]; // progressive cooldowns in seconds
 
 const strip = ({ password, ...user }: any) => user;
+
+const codeSendLog = new Map<string, { count: number; lastSentAt: number }>();
+
+function checkCodeRateLimit(email: string): { allowed: boolean; retryAfter?: number } {
+  const entry = codeSendLog.get(email);
+  if (!entry) return { allowed: true };
+
+  const tier = Math.min(entry.count - 1, RATE_LIMITS.length - 1);
+  const cooldown = RATE_LIMITS[tier] * 1000;
+  const elapsed = Date.now() - entry.lastSentAt;
+
+  if (elapsed < cooldown) {
+    return { allowed: false, retryAfter: Math.ceil((cooldown - elapsed) / 1000) };
+  }
+  return { allowed: true };
+}
+
+function trackCodeSend(email: string) {
+  const entry = codeSendLog.get(email);
+  codeSendLog.set(email, {
+    count: entry ? entry.count + 1 : 1,
+    lastSentAt: Date.now(),
+  });
+}
 
 async function sendCode(email: string) {
   await prisma.verificationCode.deleteMany({ where: { email } });
@@ -14,6 +39,7 @@ async function sendCode(email: string) {
   const expiresAt = new Date(Date.now() + CODE_TTL);
 
   await prisma.verificationCode.create({ data: { email, code, expiresAt } });
+  trackCodeSend(email);
   return sendVerificationEmail(email, code);
 }
 
@@ -94,10 +120,19 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
     if (!user) { set.status = 404; return { error: "Aucun compte trouvé" }; }
     if (user.emailVerified) { set.status = 400; return { error: "Email déjà vérifié" }; }
 
+    const limit = checkCodeRateLimit(body.email);
+    if (!limit.allowed) {
+      set.status = 429;
+      return { error: `Veuillez patienter avant de renvoyer un code`, retryAfter: limit.retryAfter };
+    }
+
     const { error } = await sendCode(body.email);
     if (error) { set.status = 500; return { error: "Échec de l'envoi" }; }
 
-    return { message: "Code envoyé" };
+    const entry = codeSendLog.get(body.email)!;
+    const nextTier = Math.min(entry.count - 1, RATE_LIMITS.length - 1);
+
+    return { message: "Code envoyé", retryAfter: RATE_LIMITS[nextTier] };
   }, {
     body: t.Object({ email: t.String({ format: "email" }) }),
   })
