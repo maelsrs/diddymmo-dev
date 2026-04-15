@@ -1,6 +1,7 @@
 import { Elysia, t } from "elysia";
 import type { Prisma } from "@prisma/client";
 import prisma from "../lib/prisma";
+import { authPlugin, requireRole } from "../lib/auth";
 
 const ListingTypeEnum = t.Union([t.Literal("LOCATION"), t.Literal("ACHAT")]);
 const PropertyTypeEnum = t.Union([t.Literal("APPARTEMENT"), t.Literal("MAISON")]);
@@ -58,6 +59,8 @@ function buildFilters(query: Record<string, string | undefined>): Prisma.RealEst
 }
 
 export const realEstateRoutes = new Elysia({ prefix: "/real-estate" })
+  .use(authPlugin)
+
   .get("/", async ({ query }) => {
     return prisma.realEstate.findMany({
       where: buildFilters(query),
@@ -147,6 +150,7 @@ export const realEstateRoutes = new Elysia({ prefix: "/real-estate" })
         images: t.Optional(t.Array(t.String())),
         contactId: t.String(),
       }),
+      beforeHandle: requireRole("EMPLOYEE", "ADMINISTRATOR"),
     }
   )
   .put(
@@ -193,6 +197,7 @@ export const realEstateRoutes = new Elysia({ prefix: "/real-estate" })
         images: t.Optional(t.Array(t.String())),
         contactId: t.Optional(t.String()),
       }),
+      beforeHandle: requireRole("EMPLOYEE", "ADMINISTRATOR"),
     }
   )
   .delete(
@@ -206,5 +211,6 @@ export const realEstateRoutes = new Elysia({ prefix: "/real-estate" })
     },
     {
       params: t.Object({ id: t.String() }),
+      beforeHandle: requireRole("ADMINISTRATOR"),
     }
   );

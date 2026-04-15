@@ -1,6 +1,7 @@
 import { Elysia, t } from "elysia";
 import type { User } from "@prisma/client";
 import prisma from "../lib/prisma";
+import { authPlugin, requireAuth, requireRole } from "../lib/auth";
 
 const RankEnum = t.Union([
   t.Literal("USER"),
@@ -14,13 +15,18 @@ function withoutPassword(user: User) {
 }
 
 export const userRoutes = new Elysia({ prefix: "/users" })
+  .use(authPlugin)
+
   .get("/", async () => {
     const users = await prisma.user.findMany();
     return users.map(withoutPassword);
+  }, {
+    beforeHandle: requireRole("EMPLOYEE", "ADMINISTRATOR"),
   })
+
   .get(
     "/:id",
-    async ({ params, set }) => {
+    async ({ params, set, authUser }) => {
       const user = await prisma.user.findUnique({
         where: { id: params.id },
       });
@@ -33,11 +39,20 @@ export const userRoutes = new Elysia({ prefix: "/users" })
       return withoutPassword(user);
     },
     {
-      params: t.Object({
-        id: t.String(),
-      }),
+      params: t.Object({ id: t.String() }),
+      beforeHandle: ({ authUser, params, set }: any) => {
+        if (!authUser) {
+          set.status = 401;
+          return { error: "Non authentifié" };
+        }
+        if (authUser.id !== params.id && !["EMPLOYEE", "ADMINISTRATOR"].includes(authUser.rank)) {
+          set.status = 403;
+          return { error: "Accès interdit" };
+        }
+      },
     }
   )
+
   .post(
     "/",
     async ({ body, set }) => {
@@ -52,6 +67,7 @@ export const userRoutes = new Elysia({ prefix: "/users" })
           name: body.name,
           password: hashedPassword,
           rank: body.rank,
+          emailVerified: true,
         },
       });
 
@@ -65,23 +81,41 @@ export const userRoutes = new Elysia({ prefix: "/users" })
         password: t.String({ minLength: 6 }),
         rank: t.Optional(RankEnum),
       }),
+      beforeHandle: requireRole("ADMINISTRATOR"),
     }
   )
+
   .put(
     "/:id",
-    async ({ params, body }) => {
-      const updatedFields: Partial<Pick<User, "email" | "name" | "password" | "rank" | "ownedRealEstate">> = {
-        email: body.email,
-        name: body.name,
-        rank: body.rank,
-        ownedRealEstate: body.ownedRealEstate,
-      };
+    async ({ params, body, authUser, set }) => {
+      const isAdmin = authUser.rank === "ADMINISTRATOR";
+      const isSelf = authUser.id === params.id;
 
+      if (!isAdmin && !isSelf) {
+        set.status = 403;
+        return { error: "Accès interdit" };
+      }
+
+      // Non-admin can only update name, email, password
+      if (!isAdmin && (body.rank || body.ownedRealEstate)) {
+        set.status = 403;
+        return { error: "Vous ne pouvez pas modifier le rang ou les propriétés" };
+      }
+
+      const updatedFields: Partial<Pick<User, "email" | "name" | "password" | "rank" | "ownedRealEstate">> = {};
+
+      if (body.email) updatedFields.email = body.email;
+      if (body.name) updatedFields.name = body.name;
       if (body.password) {
         updatedFields.password = await Bun.password.hash(body.password, {
           algorithm: "bcrypt",
           cost: 10,
         });
+      }
+
+      if (isAdmin) {
+        if (body.rank) updatedFields.rank = body.rank;
+        if (body.ownedRealEstate) updatedFields.ownedRealEstate = body.ownedRealEstate;
       }
 
       const user = await prisma.user.update({
@@ -92,9 +126,7 @@ export const userRoutes = new Elysia({ prefix: "/users" })
       return withoutPassword(user);
     },
     {
-      params: t.Object({
-        id: t.String(),
-      }),
+      params: t.Object({ id: t.String() }),
       body: t.Object({
         email: t.Optional(t.String({ format: "email" })),
         name: t.Optional(t.String()),
@@ -102,8 +134,10 @@ export const userRoutes = new Elysia({ prefix: "/users" })
         rank: t.Optional(RankEnum),
         ownedRealEstate: t.Optional(t.Array(t.String())),
       }),
+      beforeHandle: requireAuth,
     }
   )
+
   .delete(
     "/:id",
     async ({ params }) => {
@@ -114,8 +148,7 @@ export const userRoutes = new Elysia({ prefix: "/users" })
       return { message: "User deleted" };
     },
     {
-      params: t.Object({
-        id: t.String(),
-      }),
+      params: t.Object({ id: t.String() }),
+      beforeHandle: requireRole("ADMINISTRATOR"),
     }
   );
