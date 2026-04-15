@@ -62,7 +62,7 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
     await sendCode(body.email);
 
     set.status = 201;
-    return { message: "Compte créé, code envoyé", email: body.email };
+    return { message: "Account created, code sent", email: body.email };
   }, {
     body: t.Object({
       email: t.String({ format: "email" }),
@@ -96,19 +96,19 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
     const auth = headers.authorization;
     if (!auth?.startsWith("Bearer ")) {
       set.status = 401;
-      return { error: "Token manquant" };
+      return { error: "Missing token" };
     }
 
     const payload = await jwt.verify(auth.slice(7));
     if (!payload) {
       set.status = 401;
-      return { error: "Token invalide" };
+      return { error: "Invalid token" };
     }
 
     const user = await prisma.user.findUnique({ where: { id: payload.sub as string } });
     if (!user) {
       set.status = 404;
-      return { error: "Utilisateur introuvable" };
+      return { error: "User not found" };
     }
 
     return strip(user);
@@ -123,7 +123,7 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
     const limit = checkCodeRateLimit(body.email);
     if (!limit.allowed) {
       set.status = 429;
-      return { error: `Veuillez patienter avant de renvoyer un code`, retryAfter: limit.retryAfter };
+      return { error: "Veuillez patienter avant de renvoyer un code", retryAfter: limit.retryAfter };
     }
 
     const { error } = await sendCode(body.email);
@@ -132,7 +132,7 @@ export const authRoutes = new Elysia({ prefix: "/auth" })
     const entry = codeSendLog.get(body.email)!;
     const nextTier = Math.min(entry.count - 1, RATE_LIMITS.length - 1);
 
-    return { message: "Code envoyé", retryAfter: RATE_LIMITS[nextTier] };
+    return { message: "Code sent", retryAfter: RATE_LIMITS[nextTier] };
   }, {
     body: t.Object({ email: t.String({ format: "email" }) }),
   })

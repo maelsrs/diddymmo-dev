@@ -43,11 +43,11 @@ export const userRoutes = new Elysia({ prefix: "/users" })
       beforeHandle: ({ authUser, params, set }: any) => {
         if (!authUser) {
           set.status = 401;
-          return { error: "Non authentifié" };
+          return { error: "Unauthorized" };
         }
         if (authUser.id !== params.id && !["EMPLOYEE", "ADMINISTRATOR"].includes(authUser.rank)) {
           set.status = 403;
-          return { error: "Accès interdit" };
+          return { error: "Forbidden" };
         }
       },
     }
@@ -93,13 +93,12 @@ export const userRoutes = new Elysia({ prefix: "/users" })
 
       if (!isAdmin && !isSelf) {
         set.status = 403;
-        return { error: "Accès interdit" };
+        return { error: "Forbidden" };
       }
 
-      // Non-admin can only update name, email, password
       if (!isAdmin && (body.rank || body.ownedRealEstate)) {
         set.status = 403;
-        return { error: "Vous ne pouvez pas modifier le rang ou les propriétés" };
+        return { error: "Cannot modify rank or owned properties" };
       }
 
       const updatedFields: Partial<Pick<User, "email" | "name" | "password" | "rank" | "ownedRealEstate">> = {};

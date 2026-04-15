@@ -22,7 +22,7 @@ export const authPlugin = new Elysia({ name: "auth-plugin" })
 export function requireAuth({ authUser, set }: any) {
   if (!authUser) {
     set.status = 401;
-    return { error: "Non authentifié" };
+    return { error: "Unauthorized" };
   }
 }
 
@@ -30,11 +30,11 @@ export function requireRole(...roles: Rank[]) {
   return ({ authUser, set }: any) => {
     if (!authUser) {
       set.status = 401;
-      return { error: "Non authentifié" };
+      return { error: "Unauthorized" };
     }
     if (!roles.includes(authUser.rank)) {
       set.status = 403;
-      return { error: "Accès interdit" };
+      return { error: "Forbidden" };
     }
   };
 }
