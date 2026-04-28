@@ -25,11 +25,13 @@ export default function PropertyPage() {
 
   return (
     <div>
-      <div className={`container ${styles.breadcrumb}`}>
-        <Link to="/acheter" className={styles.backLink}>
-          <ArrowLeft size={16} />
-          Retour
-        </Link>
+      <div className={styles.breadcrumb}>
+        <div className="container">
+          <Link to="/acheter" className={styles.backLink}>
+            <ArrowLeft size={16} />
+            Retour
+          </Link>
+        </div>
       </div>
       <PropertyDetail property={property} />
     </div>

@@ -52,6 +52,16 @@ export default function Navbar() {
               </Link>
             </li>
           ))}
+          {user && (
+            <li>
+              <Link to="/espace-client" className={styles.link}>Mon espace</Link>
+            </li>
+          )}
+          {user && ['EMPLOYEE', 'ADMINISTRATOR'].includes(user.rank) && (
+            <li>
+              <Link to="/admin" className={styles.link}>Admin</Link>
+            </li>
+          )}
           <li className={styles.mobileLogin}>
             {user ? (
               <div className={styles.mobileUser}>

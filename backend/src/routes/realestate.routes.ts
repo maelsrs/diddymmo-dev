@@ -1,10 +1,11 @@
 import { Elysia, t } from "elysia";
 import type { Prisma } from "@prisma/client";
 import prisma from "../lib/prisma";
-import { authPlugin, requireRole } from "../lib/auth";
+import { authPlugin, requireAuth, requireRole } from "../lib/auth";
 
 const ListingTypeEnum = t.Union([t.Literal("LOCATION"), t.Literal("ACHAT")]);
 const PropertyTypeEnum = t.Union([t.Literal("APPARTEMENT"), t.Literal("MAISON")]);
+const PropertyStatusEnum = t.Union([t.Literal("DISPONIBLE"), t.Literal("LOUE"), t.Literal("VENDU")]);
 const HeatingTypeEnum = t.Union([
   t.Literal("INDIVIDUEL_GAZ"),
   t.Literal("INDIVIDUEL_ELECTRIQUE"),
@@ -30,11 +31,16 @@ const contactSelect = {
   select: { id: true, name: true, email: true },
 } as const;
 
+const tenantSelect = {
+  select: { id: true, name: true, email: true },
+} as const;
+
 function buildFilters(query: Record<string, string | undefined>): Prisma.RealEstateWhereInput {
   const filters: Prisma.RealEstateWhereInput = {};
 
   if (query.listingType) filters.listingType = query.listingType as any;
   if (query.propertyType) filters.propertyType = query.propertyType as any;
+  if (query.status) filters.status = query.status as any;
   if (query.city) filters.city = query.city;
   if (query.dpe) filters.dpe = query.dpe as any;
   if (query.furnished) filters.furnished = query.furnished as any;
@@ -61,10 +67,22 @@ function buildFilters(query: Record<string, string | undefined>): Prisma.RealEst
 export const realEstateRoutes = new Elysia({ prefix: "/real-estate" })
   .use(authPlugin)
 
+  // My tenancies — authenticated user's assigned properties (must be before /:id)
+  .get("/my/tenancies", async ({ authUser }) => {
+    return prisma.realEstate.findMany({
+      where: { tenantId: authUser.id },
+      include: { contact: contactSelect },
+      orderBy: { createdAt: "desc" },
+    });
+  }, {
+    beforeHandle: requireAuth,
+  })
+
+  // GET routes are public
   .get("/", async ({ query }) => {
     return prisma.realEstate.findMany({
       where: buildFilters(query),
-      include: { contact: contactSelect },
+      include: { contact: contactSelect, tenant: tenantSelect },
       orderBy: { createdAt: "desc" },
     });
   })
@@ -73,7 +91,7 @@ export const realEstateRoutes = new Elysia({ prefix: "/real-estate" })
     async ({ params, set }) => {
       const property = await prisma.realEstate.findUnique({
         where: { id: params.id },
-        include: { contact: contactSelect },
+        include: { contact: contactSelect, tenant: tenantSelect },
       });
 
       if (!property) {
@@ -87,6 +105,8 @@ export const realEstateRoutes = new Elysia({ prefix: "/real-estate" })
       params: t.Object({ id: t.String() }),
     }
   )
+
+  // Write routes require EMPLOYEE or ADMINISTRATOR
   .post(
     "/",
     async ({ body, set }) => {
@@ -94,6 +114,7 @@ export const realEstateRoutes = new Elysia({ prefix: "/real-estate" })
         data: {
           listingType: body.listingType,
           propertyType: body.propertyType,
+          status: body.status,
           surface: body.surface,
           rooms: body.rooms,
           floor: body.floor,
@@ -116,8 +137,9 @@ export const realEstateRoutes = new Elysia({ prefix: "/real-estate" })
           hasElevator: body.hasElevator,
           images: body.images,
           contactId: body.contactId,
+          tenantId: body.tenantId,
         },
-        include: { contact: contactSelect },
+        include: { contact: contactSelect, tenant: tenantSelect },
       });
 
       set.status = 201;
@@ -127,6 +149,7 @@ export const realEstateRoutes = new Elysia({ prefix: "/real-estate" })
       body: t.Object({
         listingType: ListingTypeEnum,
         propertyType: PropertyTypeEnum,
+        status: t.Optional(PropertyStatusEnum),
         surface: t.Number({ minimum: 1 }),
         rooms: t.Integer({ minimum: 1 }),
         floor: t.Optional(t.Integer()),
@@ -149,6 +172,7 @@ export const realEstateRoutes = new Elysia({ prefix: "/real-estate" })
         hasElevator: t.Optional(t.Boolean()),
         images: t.Optional(t.Array(t.String())),
         contactId: t.String(),
+        tenantId: t.Optional(t.String()),
       }),
       beforeHandle: requireRole("EMPLOYEE", "ADMINISTRATOR"),
     }
@@ -156,15 +180,15 @@ export const realEstateRoutes = new Elysia({ prefix: "/real-estate" })
   .put(
     "/:id",
     async ({ params, body }) => {
-      const updatedFields: Prisma.RealEstateUpdateInput = {
+      const data: Prisma.RealEstateUpdateInput = {
         ...body,
         ...(body.availableFrom && { availableFrom: new Date(body.availableFrom) }),
       };
 
       const property = await prisma.realEstate.update({
         where: { id: params.id },
-        data: updatedFields,
-        include: { contact: contactSelect },
+        data,
+        include: { contact: contactSelect, tenant: tenantSelect },
       });
 
       return property;
@@ -174,6 +198,7 @@ export const realEstateRoutes = new Elysia({ prefix: "/real-estate" })
       body: t.Object({
         listingType: t.Optional(ListingTypeEnum),
         propertyType: t.Optional(PropertyTypeEnum),
+        status: t.Optional(PropertyStatusEnum),
         surface: t.Optional(t.Number({ minimum: 1 })),
         rooms: t.Optional(t.Integer({ minimum: 1 })),
         floor: t.Optional(t.Integer()),
@@ -196,6 +221,7 @@ export const realEstateRoutes = new Elysia({ prefix: "/real-estate" })
         hasElevator: t.Optional(t.Boolean()),
         images: t.Optional(t.Array(t.String())),
         contactId: t.Optional(t.String()),
+        tenantId: t.Optional(t.Union([t.String(), t.Null()])),
       }),
       beforeHandle: requireRole("EMPLOYEE", "ADMINISTRATOR"),
     }
