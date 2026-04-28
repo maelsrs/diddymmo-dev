@@ -12,7 +12,9 @@ export const authPlugin = new Elysia({ name: "auth-plugin" })
     const payload = await jwt.verify(auth.slice(7));
     if (!payload) return { authUser: null };
 
-    const user = await prisma.user.findUnique({ where: { id: payload.sub as string } });
+    const user = await prisma.user.findUnique({
+      where: { id: payload.sub as string },
+    });
     if (!user) return { authUser: null };
 
     const { password, ...safe } = user;

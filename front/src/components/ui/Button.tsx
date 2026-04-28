@@ -1,17 +1,17 @@
-import type { ButtonHTMLAttributes, ReactNode } from 'react';
-import styles from './Button.module.css';
+import type { ButtonHTMLAttributes, ReactNode } from "react";
+import styles from "./Button.module.css";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'outline' | 'ghost';
-  size?: 'sm' | 'md' | 'lg';
+  variant?: "primary" | "outline" | "ghost";
+  size?: "sm" | "md" | "lg";
   children: ReactNode;
 }
 
 export default function Button({
-  variant = 'primary',
-  size = 'md',
+  variant = "primary",
+  size = "md",
   children,
-  className = '',
+  className = "",
   ...props
 }: ButtonProps) {
   return (

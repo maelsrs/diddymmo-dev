@@ -1,24 +1,24 @@
-import { Star } from 'lucide-react';
-import Card from '../ui/Card';
-import { useScrollAnimation } from '../../hooks/useScrollAnimation';
-import styles from './Testimonials.module.css';
+import { Star } from "lucide-react";
+import Card from "../ui/Card";
+import { useScrollAnimation } from "../../hooks/useScrollAnimation";
+import styles from "./Testimonials.module.css";
 
 const testimonials = [
   {
-    name: 'Camille R.',
-    context: 'Achat T3, Lyon',
+    name: "Camille R.",
+    context: "Achat T3, Lyon",
     stars: 5,
     text: "On cherchait depuis 6 mois. Notre conseiller nous a proposé un bien qui n'était pas encore publié. Signé en 3 semaines.",
   },
   {
-    name: 'Julien & Anaïs',
-    context: 'Vente maison, Nantes',
+    name: "Julien & Anaïs",
+    context: "Vente maison, Nantes",
     stars: 5,
     text: "Vendu en 45 jours, au prix demandé. Le suivi était clair du début à la fin, on savait toujours où on en était.",
   },
   {
-    name: 'Rachid M.',
-    context: 'Location, Marseille',
+    name: "Rachid M.",
+    context: "Location, Marseille",
     stars: 4,
     text: "Appart trouvé en une semaine. Pas beaucoup de choix dans le 7ème mais le service était réactif.",
   },
@@ -41,8 +41,14 @@ export default function Testimonials() {
                     <Star
                       key={starIndex}
                       size={14}
-                      fill={starIndex < testimonial.stars ? 'var(--accent)' : 'none'}
-                      color={starIndex < testimonial.stars ? 'var(--accent)' : '#c5ced8'}
+                      fill={
+                        starIndex < testimonial.stars ? "var(--accent)" : "none"
+                      }
+                      color={
+                        starIndex < testimonial.stars
+                          ? "var(--accent)"
+                          : "#c5ced8"
+                      }
                     />
                   ))}
                 </div>

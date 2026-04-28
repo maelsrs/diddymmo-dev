@@ -18,7 +18,19 @@ services:
         exec docker-entrypoint.sh mongod --replSet rs0 --bind_ip_all --keyFile /opt/keyfile/rs.key
       '
     healthcheck:
-      test: ["CMD", "mongosh", "-u", "diddymmo", "-p", "diddymmo", "--authenticationDatabase", "admin", "--eval", "db.runCommand('ping').ok"]
+      test:
+        [
+          "CMD",
+          "mongosh",
+          "-u",
+          "diddymmo",
+          "-p",
+          "diddymmo",
+          "--authenticationDatabase",
+          "admin",
+          "--eval",
+          "db.runCommand('ping').ok",
+        ]
       interval: 5s
       timeout: 5s
       retries: 10

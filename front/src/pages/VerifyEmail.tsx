@@ -1,7 +1,14 @@
-import { useState, useRef, useEffect, type FormEvent, type KeyboardEvent, type ClipboardEvent } from 'react';
-import { useLocation, useNavigate, Navigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import styles from './Auth.module.css';
+import {
+  useState,
+  useRef,
+  useEffect,
+  type FormEvent,
+  type KeyboardEvent,
+  type ClipboardEvent,
+} from "react";
+import { useLocation, useNavigate, Navigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import styles from "./Auth.module.css";
 
 const LEN = 6;
 const COOLDOWNS = [30, 60, 120];
@@ -11,8 +18,8 @@ export default function VerifyEmail() {
   const navigate = useNavigate();
   const email = (useLocation().state as any)?.email;
 
-  const [digits, setDigits] = useState(Array(LEN).fill(''));
-  const [error, setError] = useState('');
+  const [digits, setDigits] = useState(Array(LEN).fill(""));
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [resent, setResent] = useState(false);
   const [cooldown, setCooldown] = useState(COOLDOWNS[0]);
@@ -21,7 +28,7 @@ export default function VerifyEmail() {
 
   useEffect(() => {
     if (cooldown <= 0) return;
-    const id = setInterval(() => setCooldown(c => c - 1), 1000);
+    const id = setInterval(() => setCooldown((c) => c - 1), 1000);
     return () => clearInterval(id);
   }, [cooldown > 0]);
 
@@ -36,27 +43,36 @@ export default function VerifyEmail() {
   };
 
   const onKeyDown = (i: number, e: KeyboardEvent) => {
-    if (e.key === 'Backspace' && !digits[i] && i > 0) refs.current[i - 1]?.focus();
+    if (e.key === "Backspace" && !digits[i] && i > 0)
+      refs.current[i - 1]?.focus();
   };
 
   const onPaste = (e: ClipboardEvent) => {
     e.preventDefault();
-    const text = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, LEN);
+    const text = e.clipboardData
+      .getData("text")
+      .replace(/\D/g, "")
+      .slice(0, LEN);
     if (!text) return;
-    setDigits(text.padEnd(LEN, '').split('').slice(0, LEN));
+    setDigits(text.padEnd(LEN, "").split("").slice(0, LEN));
     refs.current[Math.min(text.length, LEN - 1)]?.focus();
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    const code = digits.join('');
-    if (code.length !== LEN) { setError('Entrez le code complet'); return; }
+    const code = digits.join("");
+    if (code.length !== LEN) {
+      setError("Entrez le code complet");
+      return;
+    }
 
-    setError('');
+    setError("");
     setLoading(true);
     const res = await verify(email, code);
-    if (res.error) { setError(res.error); setLoading(false); }
-    else navigate('/');
+    if (res.error) {
+      setError(res.error);
+      setLoading(false);
+    } else navigate("/");
   };
 
   const handleResend = async () => {
@@ -67,7 +83,7 @@ export default function VerifyEmail() {
       if (res.retryAfter) setCooldown(res.retryAfter);
     } else {
       setResent(true);
-      setError('');
+      setError("");
       const newCount = sendCount + 1;
       setSendCount(newCount);
       const tier = Math.min(newCount, COOLDOWNS.length - 1);
@@ -93,13 +109,15 @@ export default function VerifyEmail() {
             {digits.map((d, i) => (
               <input
                 key={i}
-                ref={el => { refs.current[i] = el; }}
+                ref={(el) => {
+                  refs.current[i] = el;
+                }}
                 type="text"
                 inputMode="numeric"
                 maxLength={1}
                 value={d}
-                onChange={e => onChange(i, e.target.value)}
-                onKeyDown={e => onKeyDown(i, e)}
+                onChange={(e) => onChange(i, e.target.value)}
+                onKeyDown={(e) => onKeyDown(i, e)}
                 onPaste={i === 0 ? onPaste : undefined}
                 className={styles.codeInput}
                 autoFocus={i === 0}
@@ -108,16 +126,20 @@ export default function VerifyEmail() {
           </div>
 
           <button type="submit" className={styles.submitBtn} disabled={loading}>
-            {loading ? 'Vérification...' : 'Vérifier'}
+            {loading ? "Vérification..." : "Vérifier"}
           </button>
         </form>
 
         <p className={styles.footer}>
-          Pas reçu le code ?{' '}
+          Pas reçu le code ?{" "}
           {cooldown > 0 ? (
             <span className={styles.cooldown}>Renvoyer dans {cooldown}s</span>
           ) : (
-            <button type="button" onClick={handleResend} className={styles.footerLink}>
+            <button
+              type="button"
+              onClick={handleResend}
+              className={styles.footerLink}
+            >
               Renvoyer
             </button>
           )}

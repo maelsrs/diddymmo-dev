@@ -1,5 +1,5 @@
-import PropertyGrid from '../components/sections/PropertyGrid';
-import styles from './Buy.module.css';
+import PropertyGrid from "../components/sections/PropertyGrid";
+import styles from "./Buy.module.css";
 
 export default function Buy() {
   return (
@@ -12,7 +12,11 @@ export default function Buy() {
           </p>
         </div>
       </div>
-      <PropertyGrid filter="achat" showFilters={false} title="Nos biens en vente" />
+      <PropertyGrid
+        filter="achat"
+        showFilters={false}
+        title="Nos biens en vente"
+      />
     </div>
   );
 }

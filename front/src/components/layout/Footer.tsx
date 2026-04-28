@@ -1,6 +1,6 @@
-import { Link } from 'react-router-dom';
-import { MapPin, Phone, Mail } from 'lucide-react';
-import styles from './Footer.module.css';
+import { Link } from "react-router-dom";
+import { MapPin, Phone, Mail } from "lucide-react";
+import styles from "./Footer.module.css";
 
 export default function Footer() {
   return (
@@ -11,18 +11,30 @@ export default function Footer() {
             Diddymo
           </Link>
           <p className={styles.desc}>
-            Agence immobilière présente à Paris et dans les grandes villes de France. On accompagne les particuliers dans leurs projets d'achat, de vente et de location depuis 2014.
+            Agence immobilière présente à Paris et dans les grandes villes de
+            France. On accompagne les particuliers dans leurs projets d'achat,
+            de vente et de location depuis 2014.
           </p>
         </div>
 
         <div className={styles.col}>
           <h4 className={styles.colTitle}>Navigation</h4>
           <ul className={styles.list}>
-            <li><Link to="/">Accueil</Link></li>
-            <li><Link to="/acheter">Acheter</Link></li>
-            <li><Link to="/louer">Louer</Link></li>
-            <li><Link to="/vendre">Vendre</Link></li>
-            <li><Link to="/contact">Contact</Link></li>
+            <li>
+              <Link to="/">Accueil</Link>
+            </li>
+            <li>
+              <Link to="/acheter">Acheter</Link>
+            </li>
+            <li>
+              <Link to="/louer">Louer</Link>
+            </li>
+            <li>
+              <Link to="/vendre">Vendre</Link>
+            </li>
+            <li>
+              <Link to="/contact">Contact</Link>
+            </li>
           </ul>
         </div>
 

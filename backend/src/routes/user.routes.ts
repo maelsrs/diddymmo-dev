@@ -17,12 +17,16 @@ function withoutPassword(user: User) {
 export const userRoutes = new Elysia({ prefix: "/users" })
   .use(authPlugin)
 
-  .get("/", async () => {
-    const users = await prisma.user.findMany();
-    return users.map(withoutPassword);
-  }, {
-    beforeHandle: requireRole("EMPLOYEE", "ADMINISTRATOR"),
-  })
+  .get(
+    "/",
+    async () => {
+      const users = await prisma.user.findMany();
+      return users.map(withoutPassword);
+    },
+    {
+      beforeHandle: requireRole("EMPLOYEE", "ADMINISTRATOR"),
+    },
+  )
 
   .get(
     "/:id",
@@ -45,12 +49,15 @@ export const userRoutes = new Elysia({ prefix: "/users" })
           set.status = 401;
           return { error: "Unauthorized" };
         }
-        if (authUser.id !== params.id && !["EMPLOYEE", "ADMINISTRATOR"].includes(authUser.rank)) {
+        if (
+          authUser.id !== params.id &&
+          !["EMPLOYEE", "ADMINISTRATOR"].includes(authUser.rank)
+        ) {
           set.status = 403;
           return { error: "Forbidden" };
         }
       },
-    }
+    },
   )
 
   .post(
@@ -82,7 +89,7 @@ export const userRoutes = new Elysia({ prefix: "/users" })
         rank: t.Optional(RankEnum),
       }),
       beforeHandle: requireRole("ADMINISTRATOR"),
-    }
+    },
   )
 
   .put(
@@ -101,7 +108,9 @@ export const userRoutes = new Elysia({ prefix: "/users" })
         return { error: "Cannot modify rank or owned properties" };
       }
 
-      const updatedFields: Partial<Pick<User, "email" | "name" | "password" | "rank" | "ownedRealEstate">> = {};
+      const updatedFields: Partial<
+        Pick<User, "email" | "name" | "password" | "rank" | "ownedRealEstate">
+      > = {};
 
       if (body.email) updatedFields.email = body.email;
       if (body.name) updatedFields.name = body.name;
@@ -114,7 +123,8 @@ export const userRoutes = new Elysia({ prefix: "/users" })
 
       if (isAdmin) {
         if (body.rank) updatedFields.rank = body.rank;
-        if (body.ownedRealEstate) updatedFields.ownedRealEstate = body.ownedRealEstate;
+        if (body.ownedRealEstate)
+          updatedFields.ownedRealEstate = body.ownedRealEstate;
       }
 
       const user = await prisma.user.update({
@@ -134,7 +144,7 @@ export const userRoutes = new Elysia({ prefix: "/users" })
         ownedRealEstate: t.Optional(t.Array(t.String())),
       }),
       beforeHandle: requireAuth,
-    }
+    },
   )
 
   .delete(
@@ -149,5 +159,5 @@ export const userRoutes = new Elysia({ prefix: "/users" })
     {
       params: t.Object({ id: t.String() }),
       beforeHandle: requireRole("ADMINISTRATOR"),
-    }
+    },
   );

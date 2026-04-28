@@ -1,5 +1,5 @@
-import PropertyGrid from '../components/sections/PropertyGrid';
-import styles from './Rent.module.css';
+import PropertyGrid from "../components/sections/PropertyGrid";
+import styles from "./Rent.module.css";
 
 export default function Rent() {
   return (
@@ -12,7 +12,11 @@ export default function Rent() {
           </p>
         </div>
       </div>
-      <PropertyGrid filter="location" showFilters={false} title="Nos biens en location" />
+      <PropertyGrid
+        filter="location"
+        showFilters={false}
+        title="Nos biens en location"
+      />
     </div>
   );
 }

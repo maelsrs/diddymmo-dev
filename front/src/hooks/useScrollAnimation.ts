@@ -1,7 +1,7 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef } from "react";
 
 export function useScrollAnimation<T extends HTMLElement = HTMLDivElement>(
-  threshold = 0.15
+  threshold = 0.15,
 ) {
   const ref = useRef<T>(null);
 
@@ -13,18 +13,18 @@ export function useScrollAnimation<T extends HTMLElement = HTMLDivElement>(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
+            entry.target.classList.add("visible");
             observer.unobserve(entry.target);
           }
         });
       },
-      { threshold }
+      { threshold },
     );
 
-    const children = element.querySelectorAll('.fade-up');
+    const children = element.querySelectorAll(".fade-up");
     children.forEach((child) => observer.observe(child));
 
-    if (element.classList.contains('fade-up')) {
+    if (element.classList.contains("fade-up")) {
       observer.observe(element);
     }
 

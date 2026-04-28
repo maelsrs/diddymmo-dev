@@ -13,38 +13,43 @@ const DocumentTypeEnum = t.Union([
 export const documentRoutes = new Elysia({ prefix: "/documents" })
   .use(authPlugin)
 
-  // List all documents — EMPLOYEE/ADMIN, with optional filters
-  .get("/", async ({ query }) => {
-    const where: any = {};
-    if (query.propertyId) where.propertyId = query.propertyId;
-    if (query.tenantId) where.tenantId = query.tenantId;
+  .get(
+    "/",
+    async ({ query }) => {
+      const where: any = {};
+      if (query.propertyId) where.propertyId = query.propertyId;
+      if (query.tenantId) where.tenantId = query.tenantId;
 
-    return prisma.document.findMany({
-      where,
-      include: {
-        property: { select: { id: true, address: true, city: true } },
-        tenant: { select: { id: true, name: true, email: true } },
-      },
-      orderBy: { createdAt: "desc" },
-    });
-  }, {
-    beforeHandle: requireRole("EMPLOYEE", "ADMINISTRATOR"),
-  })
+      return prisma.document.findMany({
+        where,
+        include: {
+          property: { select: { id: true, address: true, city: true } },
+          tenant: { select: { id: true, name: true, email: true } },
+        },
+        orderBy: { createdAt: "desc" },
+      });
+    },
+    {
+      beforeHandle: requireRole("EMPLOYEE", "ADMINISTRATOR"),
+    },
+  )
 
-  // My documents — authenticated user
-  .get("/my", async ({ authUser }) => {
-    return prisma.document.findMany({
-      where: { tenantId: authUser.id },
-      include: {
-        property: { select: { id: true, address: true, city: true } },
-      },
-      orderBy: { createdAt: "desc" },
-    });
-  }, {
-    beforeHandle: requireAuth,
-  })
+  .get(
+    "/my",
+    async ({ authUser }) => {
+      return prisma.document.findMany({
+        where: { tenantId: authUser.id },
+        include: {
+          property: { select: { id: true, address: true, city: true } },
+        },
+        orderBy: { createdAt: "desc" },
+      });
+    },
+    {
+      beforeHandle: requireAuth,
+    },
+  )
 
-  // Create document — EMPLOYEE/ADMIN
   .post(
     "/",
     async ({ body, set, authUser }) => {
@@ -75,14 +80,15 @@ export const documentRoutes = new Elysia({ prefix: "/documents" })
         tenantId: t.String(),
       }),
       beforeHandle: requireRole("EMPLOYEE", "ADMINISTRATOR"),
-    }
+    },
   )
 
-  // Delete document — EMPLOYEE/ADMIN
   .delete(
     "/:id",
     async ({ params, set }) => {
-      const doc = await prisma.document.findUnique({ where: { id: params.id } });
+      const doc = await prisma.document.findUnique({
+        where: { id: params.id },
+      });
       if (!doc) {
         set.status = 404;
         return { error: "Document not found" };
@@ -94,5 +100,5 @@ export const documentRoutes = new Elysia({ prefix: "/documents" })
     {
       params: t.Object({ id: t.String() }),
       beforeHandle: requireRole("EMPLOYEE", "ADMINISTRATOR"),
-    }
+    },
   );

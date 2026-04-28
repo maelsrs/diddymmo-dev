@@ -1,8 +1,8 @@
-import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
-import PropertyDetail from '../components/property/PropertyDetail';
-import { properties } from '../data/properties';
-import styles from './PropertyPage.module.css';
+import { useParams, Link } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
+import PropertyDetail from "../components/property/PropertyDetail";
+import { properties } from "../data/properties";
+import styles from "./PropertyPage.module.css";
 
 export default function PropertyPage() {
   const { id } = useParams();

@@ -1,11 +1,11 @@
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
-import styles from './ClientLayout.module.css';
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import styles from "./ClientLayout.module.css";
 
 const links = [
-  { to: '/espace-client', label: 'Mes biens', end: true },
-  { to: '/espace-client/documents', label: 'Documents' },
-  { to: '/espace-client/tickets', label: 'Support' },
+  { to: "/espace-client", label: "Mes biens", end: true },
+  { to: "/espace-client/documents", label: "Documents" },
+  { to: "/espace-client/tickets", label: "Support" },
 ];
 
 export default function ClientLayout() {
@@ -14,7 +14,7 @@ export default function ClientLayout() {
 
   const handleLogout = () => {
     logout();
-    navigate('/');
+    navigate("/");
   };
 
   return (
@@ -22,20 +22,26 @@ export default function ClientLayout() {
       <aside className={styles.sidebar}>
         <div className={styles.userInfo}>
           <strong>{user?.name}</strong>
-          <button onClick={handleLogout} className={styles.logoutBtn}>Déconnexion</button>
+          <button onClick={handleLogout} className={styles.logoutBtn}>
+            Déconnexion
+          </button>
         </div>
         <nav>
-          {links.map(l => (
+          {links.map((l) => (
             <NavLink
               key={l.to}
               to={l.to}
               end={l.end}
-              className={({ isActive }) => `${styles.link} ${isActive ? styles.active : ''}`}
+              className={({ isActive }) =>
+                `${styles.link} ${isActive ? styles.active : ""}`
+              }
             >
               {l.label}
             </NavLink>
           ))}
-          <NavLink to="/" className={styles.link}>Retour au site</NavLink>
+          <NavLink to="/" className={styles.link}>
+            Retour au site
+          </NavLink>
         </nav>
       </aside>
       <main className={styles.content}>

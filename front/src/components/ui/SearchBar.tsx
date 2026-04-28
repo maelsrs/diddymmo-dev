@@ -1,11 +1,11 @@
-import { useState } from 'react';
-import { Search } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import styles from './SearchBar.module.css';
+import { useState } from "react";
+import { Search } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import styles from "./SearchBar.module.css";
 
 export default function SearchBar() {
-  const [city, setCity] = useState('');
-  const [type, setType] = useState('acheter');
+  const [city, setCity] = useState("");
+  const [type, setType] = useState("acheter");
   const navigate = useNavigate();
 
   const handleSearch = () => {

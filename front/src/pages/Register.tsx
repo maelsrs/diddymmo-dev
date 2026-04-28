@@ -1,32 +1,32 @@
-import { useState, type FormEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { User, Mail, Lock, Eye, EyeOff } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
-import styles from './Auth.module.css';
+import { useState, type FormEvent } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { User, Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import styles from "./Auth.module.css";
 
 export default function Register() {
   const { register } = useAuth();
   const navigate = useNavigate();
 
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     if (password !== confirmPassword) {
-      setError('Les mots de passe ne correspondent pas');
+      setError("Les mots de passe ne correspondent pas");
       return;
     }
 
     if (password.length < 6) {
-      setError('Le mot de passe doit contenir au moins 6 caractères');
+      setError("Le mot de passe doit contenir au moins 6 caractères");
       return;
     }
 
@@ -38,7 +38,7 @@ export default function Register() {
       setError(result.error);
       setSubmitting(false);
     } else {
-      navigate('/verify', { state: { email: result.email } });
+      navigate("/verify", { state: { email: result.email } });
     }
   };
 
@@ -47,16 +47,16 @@ export default function Register() {
       <div className={styles.card}>
         <div className={styles.header}>
           <h1 className={styles.title}>Inscription</h1>
-          <p className={styles.subtitle}>
-            Créez votre compte pour commencer
-          </p>
+          <p className={styles.subtitle}>Créez votre compte pour commencer</p>
         </div>
 
         <form className={styles.form} onSubmit={handleSubmit}>
           {error && <div className={styles.error}>{error}</div>}
 
           <div className={styles.field}>
-            <label htmlFor="name" className={styles.label}>Nom complet</label>
+            <label htmlFor="name" className={styles.label}>
+              Nom complet
+            </label>
             <div className={styles.inputWrapper}>
               <User size={18} className={styles.inputIcon} />
               <input
@@ -73,7 +73,9 @@ export default function Register() {
           </div>
 
           <div className={styles.field}>
-            <label htmlFor="email" className={styles.label}>Email</label>
+            <label htmlFor="email" className={styles.label}>
+              Email
+            </label>
             <div className={styles.inputWrapper}>
               <Mail size={18} className={styles.inputIcon} />
               <input
@@ -89,12 +91,14 @@ export default function Register() {
           </div>
 
           <div className={styles.field}>
-            <label htmlFor="password" className={styles.label}>Mot de passe</label>
+            <label htmlFor="password" className={styles.label}>
+              Mot de passe
+            </label>
             <div className={styles.inputWrapper}>
               <Lock size={18} className={styles.inputIcon} />
               <input
                 id="password"
-                type={showPassword ? 'text' : 'password'}
+                type={showPassword ? "text" : "password"}
                 placeholder="Minimum 6 caractères"
                 className={styles.input}
                 value={password}
@@ -106,7 +110,7 @@ export default function Register() {
                 type="button"
                 className={styles.togglePassword}
                 onClick={() => setShowPassword(!showPassword)}
-                aria-label={showPassword ? 'Masquer' : 'Afficher'}
+                aria-label={showPassword ? "Masquer" : "Afficher"}
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
@@ -114,12 +118,14 @@ export default function Register() {
           </div>
 
           <div className={styles.field}>
-            <label htmlFor="confirmPassword" className={styles.label}>Confirmer le mot de passe</label>
+            <label htmlFor="confirmPassword" className={styles.label}>
+              Confirmer le mot de passe
+            </label>
             <div className={styles.inputWrapper}>
               <Lock size={18} className={styles.inputIcon} />
               <input
                 id="confirmPassword"
-                type={showPassword ? 'text' : 'password'}
+                type={showPassword ? "text" : "password"}
                 placeholder="Retapez votre mot de passe"
                 className={styles.input}
                 value={confirmPassword}
@@ -129,13 +135,17 @@ export default function Register() {
             </div>
           </div>
 
-          <button type="submit" className={styles.submitBtn} disabled={submitting}>
-            {submitting ? 'Création...' : 'Créer mon compte'}
+          <button
+            type="submit"
+            className={styles.submitBtn}
+            disabled={submitting}
+          >
+            {submitting ? "Création..." : "Créer mon compte"}
           </button>
         </form>
 
         <p className={styles.footer}>
-          Déjà un compte ?{' '}
+          Déjà un compte ?{" "}
           <Link to="/login" className={styles.footerLink}>
             Se connecter
           </Link>

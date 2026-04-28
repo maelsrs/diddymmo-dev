@@ -1,33 +1,33 @@
-import { useState } from 'react';
-import PropertyCard from '../property/PropertyCard';
-import { useScrollAnimation } from '../../hooks/useScrollAnimation';
-import { properties } from '../../data/properties';
-import styles from './PropertyGrid.module.css';
+import { useState } from "react";
+import PropertyCard from "../property/PropertyCard";
+import { useScrollAnimation } from "../../hooks/useScrollAnimation";
+import { properties } from "../../data/properties";
+import styles from "./PropertyGrid.module.css";
 
 interface PropertyGridProps {
-  filter?: 'achat' | 'location';
+  filter?: "achat" | "location";
   showFilters?: boolean;
   title?: string;
 }
 
 const filterOptions = [
-  { key: 'tous', label: 'Tous' },
-  { key: 'achat', label: 'Acheter' },
-  { key: 'location', label: 'Louer' },
+  { key: "tous", label: "Tous" },
+  { key: "achat", label: "Acheter" },
+  { key: "location", label: "Louer" },
 ];
 
 export default function PropertyGrid({
   filter,
   showFilters = true,
-  title = 'Biens disponibles',
+  title = "Biens disponibles",
 }: PropertyGridProps) {
-  const [activeFilter, setActiveFilter] = useState<string>(filter || 'tous');
+  const [activeFilter, setActiveFilter] = useState<string>(filter || "tous");
   const ref = useScrollAnimation();
 
   const visibleFilters = showFilters ? filterOptions : [];
 
   const filteredProperties =
-    activeFilter === 'tous'
+    activeFilter === "tous"
       ? properties
       : properties.filter((property) => property.type === activeFilter);
 
@@ -41,7 +41,7 @@ export default function PropertyGrid({
               {visibleFilters.map((option) => (
                 <button
                   key={option.key}
-                  className={`${styles.filterBtn} ${activeFilter === option.key ? styles.filterActive : ''}`}
+                  className={`${styles.filterBtn} ${activeFilter === option.key ? styles.filterActive : ""}`}
                   onClick={() => setActiveFilter(option.key)}
                 >
                   {option.label}

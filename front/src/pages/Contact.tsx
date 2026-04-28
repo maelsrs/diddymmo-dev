@@ -1,6 +1,6 @@
-import { Phone, Mail, MapPin, Clock } from 'lucide-react';
-import { useScrollAnimation } from '../hooks/useScrollAnimation';
-import styles from './Contact.module.css';
+import { Phone, Mail, MapPin, Clock } from "lucide-react";
+import { useScrollAnimation } from "../hooks/useScrollAnimation";
+import styles from "./Contact.module.css";
 
 export default function Contact() {
   const ref = useScrollAnimation();
@@ -11,7 +11,8 @@ export default function Contact() {
         <div className="container">
           <h1 className={`${styles.title} fade-up`}>Contact</h1>
           <p className={`${styles.subtitle} fade-up`}>
-            Pour toute question ou demande d'estimation, contactez-nous par téléphone, email ou via le formulaire.
+            Pour toute question ou demande d'estimation, contactez-nous par
+            téléphone, email ou via le formulaire.
           </p>
         </div>
       </div>
@@ -48,7 +49,9 @@ export default function Contact() {
                 </div>
                 <div>
                   <p className={styles.contactLabel}>Adresse</p>
-                  <p className={styles.contactValue}>12 Rue de la Paix, 75002 Paris</p>
+                  <p className={styles.contactValue}>
+                    12 Rue de la Paix, 75002 Paris
+                  </p>
                 </div>
               </div>
 
@@ -58,7 +61,9 @@ export default function Contact() {
                 </div>
                 <div>
                   <p className={styles.contactLabel}>Horaires</p>
-                  <p className={styles.contactValue}>Lun–Ven : 9h–19h / Sam : 10h–17h</p>
+                  <p className={styles.contactValue}>
+                    Lun–Ven : 9h–19h / Sam : 10h–17h
+                  </p>
                 </div>
               </div>
             </div>
@@ -69,21 +74,49 @@ export default function Contact() {
             <form className={styles.form} onSubmit={(e) => e.preventDefault()}>
               <div className={styles.row}>
                 <div className={styles.field}>
-                  <label htmlFor="name" className={styles.label}>Nom</label>
-                  <input id="name" type="text" placeholder="Votre nom" className={styles.input} />
+                  <label htmlFor="name" className={styles.label}>
+                    Nom
+                  </label>
+                  <input
+                    id="name"
+                    type="text"
+                    placeholder="Votre nom"
+                    className={styles.input}
+                  />
                 </div>
                 <div className={styles.field}>
-                  <label htmlFor="email" className={styles.label}>Email</label>
-                  <input id="email" type="email" placeholder="votre@email.fr" className={styles.input} />
+                  <label htmlFor="email" className={styles.label}>
+                    Email
+                  </label>
+                  <input
+                    id="email"
+                    type="email"
+                    placeholder="votre@email.fr"
+                    className={styles.input}
+                  />
                 </div>
               </div>
               <div className={styles.field}>
-                <label htmlFor="subject" className={styles.label}>Sujet</label>
-                <input id="subject" type="text" placeholder="Le sujet de votre message" className={styles.input} />
+                <label htmlFor="subject" className={styles.label}>
+                  Sujet
+                </label>
+                <input
+                  id="subject"
+                  type="text"
+                  placeholder="Le sujet de votre message"
+                  className={styles.input}
+                />
               </div>
               <div className={styles.field}>
-                <label htmlFor="message" className={styles.label}>Message</label>
-                <textarea id="message" rows={6} placeholder="Votre message..." className={styles.textarea} />
+                <label htmlFor="message" className={styles.label}>
+                  Message
+                </label>
+                <textarea
+                  id="message"
+                  rows={6}
+                  placeholder="Votre message..."
+                  className={styles.textarea}
+                />
               </div>
               <button type="submit" className={styles.submitBtn}>
                 Envoyer

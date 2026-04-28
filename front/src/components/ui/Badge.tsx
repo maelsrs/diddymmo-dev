@@ -1,11 +1,11 @@
-import styles from './Badge.module.css';
+import styles from "./Badge.module.css";
 
 interface BadgeProps {
   children: string;
-  variant?: 'default' | 'accent';
+  variant?: "default" | "accent";
 }
 
-export default function Badge({ children, variant = 'default' }: BadgeProps) {
+export default function Badge({ children, variant = "default" }: BadgeProps) {
   return (
     <span className={`${styles.badge} ${styles[variant]}`}>{children}</span>
   );

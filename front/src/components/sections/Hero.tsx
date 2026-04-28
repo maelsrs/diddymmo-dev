@@ -1,6 +1,6 @@
-import SearchBar from '../ui/SearchBar';
-import { useScrollAnimation } from '../../hooks/useScrollAnimation';
-import styles from './Hero.module.css';
+import SearchBar from "../ui/SearchBar";
+import { useScrollAnimation } from "../../hooks/useScrollAnimation";
+import styles from "./Hero.module.css";
 
 export default function Hero() {
   const ref = useScrollAnimation();
