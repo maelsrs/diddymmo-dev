@@ -1,0 +1,283 @@
+.page {
+  max-width: 900px;
+}
+
+.page h1 {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin-bottom: 28px;
+}
+
+/* ── Cards ── */
+
+.card {
+  background: var(--bg-white);
+  padding: 24px;
+  border-radius: var(--radius-card);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+  margin-bottom: 16px;
+  transition: transform 0.3s var(--ease-out), box-shadow 0.3s var(--ease-out);
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+}
+
+.card h3 {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.card p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* ── Badges ── */
+
+.badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.badgeGreen {
+  background: rgba(22, 163, 74, 0.1);
+  color: #16a34a;
+}
+
+.badgeBlue {
+  background: rgba(74, 127, 181, 0.12);
+  color: var(--accent);
+}
+
+.badgeRed {
+  background: rgba(220, 38, 38, 0.1);
+  color: #dc2626;
+}
+
+.badgeYellow {
+  background: rgba(202, 138, 4, 0.1);
+  color: #ca8a04;
+}
+
+.badgeGray {
+  background: var(--bg-primary);
+  color: var(--text-muted);
+}
+
+/* ── Table ── */
+
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--bg-white);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+}
+
+.table th,
+.table td {
+  padding: 14px 20px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.85rem;
+}
+
+.table th {
+  background: var(--bg-primary);
+  font-weight: 500;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+/* ── Buttons ── */
+
+.btn {
+  padding: 12px 28px;
+  border: none;
+  border-radius: var(--radius-pill);
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: var(--font-body);
+  letter-spacing: 0.02em;
+  transition: all 0.3s var(--ease-out);
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btnPrimary {
+  background: var(--accent);
+  color: #fff;
+}
+
+.btnPrimary:hover {
+  background: var(--accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(74, 127, 181, 0.25);
+}
+
+/* ── Forms ── */
+
+.form {
+  background: var(--bg-white);
+  padding: 32px;
+  border-radius: var(--radius-card);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 600px;
+}
+
+.form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+.form input,
+.form select,
+.form textarea {
+  padding: 14px 18px;
+  border: none;
+  border-radius: var(--radius-input);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 0.88rem;
+  font-family: var(--font-body);
+  outline: none;
+  transition: box-shadow 0.3s var(--ease-out);
+}
+
+.form input:focus,
+.form select:focus,
+.form textarea:focus {
+  box-shadow: 0 0 0 2px rgba(74, 127, 181, 0.3);
+}
+
+.form input::placeholder,
+.form textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.form textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* ── Messages (ticket thread) ── */
+
+.messages {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.message {
+  background: var(--bg-white);
+  padding: 20px;
+  border-radius: var(--radius-card);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+  border-left: 3px solid var(--border);
+}
+
+.messageStaff {
+  border-left: 3px solid var(--accent);
+}
+
+.messageMeta {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  letter-spacing: 0.02em;
+}
+
+.messageContent {
+  font-size: 0.88rem;
+  color: var(--text-primary);
+  white-space: pre-wrap;
+  line-height: 1.6;
+}
+
+/* ── Empty state ── */
+
+.empty {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 48px;
+  font-size: 0.88rem;
+  font-weight: 300;
+}
+
+/* ── Links ── */
+
+.link {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s var(--ease-out);
+}
+
+.link:hover {
+  color: var(--accent-hover);
+}
+
+/* ── Reply form ── */
+
+.replyForm {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+}
+
+.replyInput {
+  flex: 1;
+  padding: 14px 18px;
+  border: none;
+  border-radius: var(--radius-input);
+  background: var(--bg-white);
+  color: var(--text-primary);
+  font-size: 0.88rem;
+  font-family: var(--font-body);
+  min-height: 80px;
+  resize: vertical;
+  outline: none;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+  transition: box-shadow 0.3s var(--ease-out);
+}
+
+.replyInput:focus {
+  box-shadow: 0 0 0 2px rgba(74, 127, 181, 0.3);
+}
+
+.replyInput::placeholder {
+  color: var(--text-muted);
+}
