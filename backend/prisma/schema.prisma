@@ -46,17 +46,41 @@ enum FurnishedStatus {
   NON_MEUBLE
 }
 
+enum PropertyStatus {
+  DISPONIBLE
+  LOUE
+  VENDU
+}
+
+enum DocumentType {
+  CONTRAT
+  QUITTANCE
+  FACTURE
+  ETAT_DES_LIEUX
+  AUTRE
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  CLOSED
+}
+
 model User {
-  id               String       @id @default(uuid()) @map("_id")
-  email            String       @unique
+  id               String          @id @default(uuid()) @map("_id")
+  email            String          @unique
   name             String
   password         String
-  emailVerified    Boolean      @default(false)
-  rank             Rank         @default(USER)
-  ownedRealEstate  String[]     @default([])
-  assignedListings RealEstate[] @relation("ContactEmployee")
-  createdAt        DateTime     @default(now())
-  updatedAt        DateTime     @updatedAt
+  emailVerified    Boolean         @default(false)
+  rank             Rank            @default(USER)
+  ownedRealEstate  String[]        @default([])
+  assignedListings RealEstate[]    @relation("ContactEmployee")
+  tenantProperties RealEstate[]    @relation("TenantProperties")
+  documents        Document[]
+  tickets          Ticket[]
+  ticketMessages   TicketMessage[]
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
 }
 
 model VerificationCode {
@@ -72,6 +96,7 @@ model RealEstate {
 
   listingType       ListingType
   propertyType      PropertyType
+  status            PropertyStatus  @default(DISPONIBLE)
 
   surface           Float
   rooms             Int
@@ -103,6 +128,60 @@ model RealEstate {
   contactId         String
   contact           User            @relation("ContactEmployee", fields: [contactId], references: [id])
 
+  tenantId          String?
+  tenant            User?           @relation("TenantProperties", fields: [tenantId], references: [id])
+
+  documents         Document[]
+  tickets           Ticket[]
+
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
+}
+
+model Document {
+  id           String       @id @default(uuid()) @map("_id")
+  name         String
+  type         DocumentType
+  url          String
+
+  propertyId   String
+  property     RealEstate   @relation(fields: [propertyId], references: [id])
+
+  tenantId     String
+  tenant       User         @relation(fields: [tenantId], references: [id])
+
+  uploadedById String
+
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+model Ticket {
+  id         String       @id @default(uuid()) @map("_id")
+  subject    String
+  status     TicketStatus @default(OPEN)
+
+  userId     String
+  user       User         @relation(fields: [userId], references: [id])
+
+  propertyId String?
+  property   RealEstate?  @relation(fields: [propertyId], references: [id])
+
+  messages   TicketMessage[]
+
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+}
+
+model TicketMessage {
+  id        String   @id @default(uuid()) @map("_id")
+  content   String
+
+  ticketId  String
+  ticket    Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+
+  createdAt DateTime @default(now())
 }
