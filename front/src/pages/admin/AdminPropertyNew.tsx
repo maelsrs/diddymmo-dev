@@ -9,6 +9,8 @@ export default function AdminPropertyNew() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [employees, setEmployees] = useState<any[]>([]);
+  const [images, setImages] = useState<string[]>([]);
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
 
   const [form, setForm] = useState({
@@ -51,6 +53,25 @@ export default function AdminPropertyNew() {
 
   const set = (key: string, val: any) => setForm((f) => ({ ...f, [key]: val }));
 
+  const setImage = (i: number, val: string) =>
+    setImages((arr) => arr.map((x, idx) => (idx === i ? val : x)));
+  const addImage = () => setImages((arr) => [...arr, ""]);
+  const removeImage = (i: number) =>
+    setImages((arr) => arr.filter((_, idx) => idx !== i));
+
+  const handleUpload = async (file: File | undefined) => {
+    if (!file) return;
+    setError("");
+    setUploading(true);
+    const res = await api.upload("/uploads", file);
+    setUploading(false);
+    if (!res.ok || !res.data?.url) {
+      setError(res.data?.error || "Échec de l'upload de l'image");
+      return;
+    }
+    setImages((arr) => [...arr, res.data.url]);
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError("");
@@ -64,6 +85,7 @@ export default function AdminPropertyNew() {
       price: Number(form.price),
       charges: form.charges ? Number(form.charges) : undefined,
       transportDetails: form.transportDetails || undefined,
+      images: images.map((s) => s.trim()).filter(Boolean),
     };
 
     const res = await api.post("/real-estate", body);
@@ -311,7 +333,82 @@ export default function AdminPropertyNew() {
           </select>
         </label>
 
-        <button type="submit" className={`${styles.btn} ${styles.btnPrimary}`}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <span>Photos (URL)</span>
+          {images.length === 0 && (
+            <p className={styles.emptyText}>Aucune photo pour le moment</p>
+          )}
+          {images.map((url, i) => (
+            <div
+              key={i}
+              style={{ display: "flex", alignItems: "center", gap: 8 }}
+            >
+              {url.trim() && (
+                <img
+                  src={url}
+                  alt=""
+                  style={{
+                    width: 56,
+                    height: 42,
+                    objectFit: "cover",
+                    borderRadius: 4,
+                    flexShrink: 0,
+                  }}
+                  onError={(e) => {
+                    e.currentTarget.style.visibility = "hidden";
+                  }}
+                  onLoad={(e) => {
+                    e.currentTarget.style.visibility = "visible";
+                  }}
+                />
+              )}
+              <input
+                style={{ flex: 1 }}
+                value={url}
+                placeholder="https://…"
+                onChange={(e) => setImage(i, e.target.value)}
+              />
+              <button
+                type="button"
+                onClick={() => removeImage(i)}
+                className={`${styles.btn} ${styles.btnDanger} ${styles.btnSmall}`}
+              >
+                Retirer
+              </button>
+            </div>
+          ))}
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            <label
+              className={`${styles.btn} ${styles.btnSmall}`}
+              style={{ cursor: "pointer", margin: 0 }}
+            >
+              {uploading ? "Envoi…" : "⬆ Téléverser une photo"}
+              <input
+                type="file"
+                accept="image/*"
+                style={{ display: "none" }}
+                disabled={uploading}
+                onChange={(e) => {
+                  handleUpload(e.target.files?.[0]);
+                  e.target.value = "";
+                }}
+              />
+            </label>
+            <button
+              type="button"
+              onClick={addImage}
+              className={`${styles.btn} ${styles.btnSmall}`}
+            >
+              + Ajouter par URL
+            </button>
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          className={`${styles.btn} ${styles.btnPrimary}`}
+          disabled={uploading}
+        >
           Créer le bien
         </button>
       </form>

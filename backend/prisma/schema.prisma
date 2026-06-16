@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mongodb"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -67,7 +67,7 @@ enum TicketStatus {
 }
 
 model User {
-  id               String          @id @default(uuid()) @map("_id")
+  id               String          @id @default(uuid())
   email            String          @unique
   name             String
   password         String
@@ -84,7 +84,7 @@ model User {
 }
 
 model VerificationCode {
-  id        String   @id @default(uuid()) @map("_id")
+  id        String   @id @default(uuid())
   email     String
   code      String
   expiresAt DateTime
@@ -92,7 +92,7 @@ model VerificationCode {
 }
 
 model RealEstate {
-  id                String          @id @default(uuid()) @map("_id")
+  id                String          @id @default(uuid())
 
   listingType       ListingType
   propertyType      PropertyType
@@ -139,7 +139,7 @@ model RealEstate {
 }
 
 model Document {
-  id           String       @id @default(uuid()) @map("_id")
+  id           String       @id @default(uuid())
   name         String
   type         DocumentType
   url          String
@@ -157,7 +157,7 @@ model Document {
 }
 
 model Ticket {
-  id         String       @id @default(uuid()) @map("_id")
+  id         String       @id @default(uuid())
   subject    String
   status     TicketStatus @default(OPEN)
 
@@ -174,7 +174,7 @@ model Ticket {
 }
 
 model TicketMessage {
-  id        String   @id @default(uuid()) @map("_id")
+  id        String   @id @default(uuid())
   content   String
 
   ticketId  String

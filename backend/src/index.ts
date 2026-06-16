@@ -5,6 +5,7 @@ import { realEstateRoutes } from "./routes/realestate.routes";
 import { authRoutes } from "./routes/auth.routes";
 import { documentRoutes } from "./routes/document.routes";
 import { ticketRoutes } from "./routes/ticket.routes";
+import { uploadRoutes } from "./routes/upload.routes";
 
 const app = new Elysia()
   .onError(({ code, error, path, set }) => {
@@ -25,6 +26,7 @@ const app = new Elysia()
   .use(authRoutes)
   .use(documentRoutes)
   .use(ticketRoutes)
+  .use(uploadRoutes)
   .listen(process.env.PORT ?? 3000);
 
 console.log(

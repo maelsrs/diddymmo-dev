@@ -1,5 +1,5 @@
 import { useAuth } from "../context/AuthContext";
-import { apiFetch } from "../lib/api";
+import { apiFetch, apiUpload } from "../lib/api";
 
 export function useApi() {
   const { token } = useAuth();
@@ -11,5 +11,6 @@ export function useApi() {
     put: (path: string, body: object) =>
       apiFetch(path, { method: "PUT", body, token }),
     del: (path: string) => apiFetch(path, { method: "DELETE", token }),
+    upload: (path: string, file: File) => apiUpload(path, file, token),
   };
 }

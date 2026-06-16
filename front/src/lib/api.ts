@@ -21,3 +21,24 @@ export async function apiFetch(
   const data = await res.json();
   return { ok: res.ok, status: res.status, data };
 }
+
+export async function apiUpload(
+  path: string,
+  file: File,
+  token?: string | null,
+) {
+  const form = new FormData();
+  form.append("file", file);
+
+  const headers: Record<string, string> = {};
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+
+  const res = await fetch(`${API}${path}`, {
+    method: "POST",
+    headers,
+    body: form,
+  });
+
+  const data = await res.json();
+  return { ok: res.ok, status: res.status, data };
+}
