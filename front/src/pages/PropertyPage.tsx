@@ -1,12 +1,40 @@
+import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import PropertyDetail from "../components/property/PropertyDetail";
-import { properties } from "../data/properties";
+import { useApi } from "../hooks/useApi";
+import { mapProperty } from "../lib/propertyMapper";
+import type { Property } from "../types/property";
 import styles from "./PropertyPage.module.css";
 
 export default function PropertyPage() {
   const { id } = useParams();
-  const property = properties.find((p) => p.id === id);
+  const api = useApi();
+  const [property, setProperty] = useState<Property | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!id) {
+      setLoading(false);
+      return;
+    }
+    api
+      .get(`/real-estate/${id}`)
+      .then((r) => {
+        if (r.ok) setProperty(mapProperty(r.data));
+      })
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className={styles.notFound}>
+        <div className="container">
+          <p>Chargement…</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!property) {
     return (

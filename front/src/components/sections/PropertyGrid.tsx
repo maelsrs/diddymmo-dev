@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PropertyCard from "../property/PropertyCard";
 import { useScrollAnimation } from "../../hooks/useScrollAnimation";
-import { properties } from "../../data/properties";
+import { useApi } from "../../hooks/useApi";
+import { mapProperty } from "../../lib/propertyMapper";
+import type { Property } from "../../types/property";
 import styles from "./PropertyGrid.module.css";
 
 interface PropertyGridProps {
@@ -21,8 +23,27 @@ export default function PropertyGrid({
   showFilters = true,
   title = "Biens disponibles",
 }: PropertyGridProps) {
+  const api = useApi();
   const [activeFilter, setActiveFilter] = useState<string>(filter || "tous");
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const ref = useScrollAnimation();
+
+  useEffect(() => {
+    api
+      .get("/real-estate")
+      .then((r) => {
+        if (r.ok) {
+          setProperties((r.data as any[]).map(mapProperty));
+          setError("");
+        } else {
+          setError("Impossible de charger les biens");
+        }
+      })
+      .catch(() => setError("Erreur réseau"))
+      .finally(() => setLoading(false));
+  }, []);
 
   const visibleFilters = showFilters ? filterOptions : [];
 
@@ -51,13 +72,21 @@ export default function PropertyGrid({
           )}
         </div>
 
-        <div className={styles.grid}>
-          {filteredProperties.map((property) => (
-            <div key={property.id} className="fade-up">
-              <PropertyCard property={property} />
-            </div>
-          ))}
-        </div>
+        {loading ? (
+          <p className="fade-up">Chargement…</p>
+        ) : error ? (
+          <p className="fade-up">{error}</p>
+        ) : filteredProperties.length === 0 ? (
+          <p className="fade-up">Aucun bien disponible pour le moment.</p>
+        ) : (
+          <div className={styles.grid}>
+            {filteredProperties.map((property) => (
+              <div key={property.id} className="fade-up">
+                <PropertyCard property={property} />
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

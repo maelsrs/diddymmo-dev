@@ -21,7 +21,7 @@ import {
 import Badge from "../ui/Badge";
 import Button from "../ui/Button";
 import { useApp } from "../../context/AppContext";
-import type { Property } from "../../data/properties";
+import type { Property } from "../../types/property";
 import styles from "./PropertyDetail.module.css";
 
 interface PropertyDetailProps {

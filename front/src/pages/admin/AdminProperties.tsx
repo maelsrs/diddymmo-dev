@@ -18,10 +18,23 @@ export default function AdminProperties() {
   const api = useApi();
   const [properties, setProperties] = useState<any[]>([]);
   const [filter, setFilter] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   const load = () => {
+    setLoading(true);
     const qs = filter ? `?status=${filter}` : "";
-    api.get(`/real-estate${qs}`).then((r) => r.ok && setProperties(r.data));
+    api
+      .get(`/real-estate${qs}`)
+      .then((r) => {
+        if (r.ok) {
+          setProperties(r.data);
+          setError("");
+        } else {
+          setError(r.data?.error || "Impossible de charger les biens");
+        }
+      })
+      .finally(() => setLoading(false));
   };
 
   useEffect(() => {
@@ -30,7 +43,11 @@ export default function AdminProperties() {
 
   const handleDelete = async (id: string) => {
     if (!confirm("Supprimer ce bien ?")) return;
-    await api.del(`/real-estate/${id}`);
+    const r = await api.del(`/real-estate/${id}`);
+    if (!r.ok) {
+      setError(r.data?.error || "Suppression impossible");
+      return;
+    }
     load();
   };
 
@@ -51,51 +68,62 @@ export default function AdminProperties() {
           Ajouter un bien
         </Link>
       </div>
-      <table className={styles.table}>
-        <thead>
-          <tr>
-            <th>Adresse</th>
-            <th>Type</th>
-            <th>Statut</th>
-            <th>Prix</th>
-            <th>Locataire</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {properties.map((p) => (
-            <tr key={p.id}>
-              <td>
-                {p.address}, {p.city}
-              </td>
-              <td>{p.listingType}</td>
-              <td>
-                <span
-                  className={`${styles.badge} ${STATUS_BADGE[p.status] ?? styles.badgeGray}`}
-                >
-                  {STATUS_LABELS[p.status] ?? p.status}
-                </span>
-              </td>
-              <td>{p.price.toLocaleString()} &euro;</td>
-              <td>{p.tenant?.name ?? "—"}</td>
-              <td className={styles.actions}>
-                <Link
-                  to={`/admin/properties/${p.id}`}
-                  className={`${styles.btn} ${styles.btnPrimary} ${styles.btnSmall}`}
-                >
-                  Modifier
-                </Link>
-                <button
-                  onClick={() => handleDelete(p.id)}
-                  className={`${styles.btn} ${styles.btnDanger} ${styles.btnSmall}`}
-                >
-                  Supprimer
-                </button>
-              </td>
+      {error && <p className={styles.error}>{error}</p>}
+      {loading ? (
+        <p>Chargement…</p>
+      ) : properties.length === 0 ? (
+        <p>Aucun bien.</p>
+      ) : (
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th>Adresse</th>
+              <th>Type</th>
+              <th>Statut</th>
+              <th>Prix</th>
+              <th>Locataire</th>
+              <th>Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {properties.map((p) => (
+              <tr key={p.id}>
+                <td>
+                  {p.address}, {p.city}
+                </td>
+                <td>{p.listingType}</td>
+                <td>
+                  <span
+                    className={`${styles.badge} ${STATUS_BADGE[p.status] ?? styles.badgeGray}`}
+                  >
+                    {STATUS_LABELS[p.status] ?? p.status}
+                  </span>
+                </td>
+                <td>
+                  {typeof p.price === "number"
+                    ? `${p.price.toLocaleString()} €`
+                    : "—"}
+                </td>
+                <td>{p.tenant?.name ?? "—"}</td>
+                <td className={styles.actions}>
+                  <Link
+                    to={`/admin/properties/${p.id}`}
+                    className={`${styles.btn} ${styles.btnPrimary} ${styles.btnSmall}`}
+                  >
+                    Modifier
+                  </Link>
+                  <button
+                    onClick={() => handleDelete(p.id)}
+                    className={`${styles.btn} ${styles.btnDanger} ${styles.btnSmall}`}
+                  >
+                    Supprimer
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 }

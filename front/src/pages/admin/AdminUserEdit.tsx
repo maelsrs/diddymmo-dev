@@ -7,23 +7,44 @@ export default function AdminUserEdit() {
   const { id } = useParams();
   const api = useApi();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ name: "", email: "", rank: "USER" });
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    rank: "USER",
+    password: "",
+  });
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     api.get(`/users/${id}`).then((r) => {
-      if (r.ok)
-        setForm({ name: r.data.name, email: r.data.email, rank: r.data.rank });
+      if (r.ok) {
+        setForm({
+          name: r.data.name,
+          email: r.data.email,
+          rank: r.data.rank,
+          password: "",
+        });
+      } else {
+        setError(r.data?.error || "Impossible de charger l'utilisateur");
+      }
+      setLoading(false);
     });
   }, [id]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError("");
-    const res = await api.put(`/users/${id}`, form);
-    if (!res.ok) setError(res.data.error);
+    const { password, ...rest } = form;
+    const body: Record<string, unknown> = { ...rest };
+    if (password) body.password = password;
+
+    const res = await api.put(`/users/${id}`, body);
+    if (!res.ok) setError(res.data?.error || "Erreur lors de la mise à jour");
     else navigate("/admin/users");
   };
+
+  if (loading) return <div className={styles.page}>Chargement…</div>;
 
   return (
     <div className={styles.page}>
@@ -55,6 +76,18 @@ export default function AdminUserEdit() {
             <option value="EMPLOYEE">EMPLOYEE</option>
             <option value="ADMINISTRATOR">ADMINISTRATOR</option>
           </select>
+        </label>
+        <label>
+          Nouveau mot de passe (laisser vide pour conserver)
+          <input
+            type="password"
+            value={form.password}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, password: e.target.value }))
+            }
+            placeholder="••••••"
+            minLength={6}
+          />
         </label>
         <button type="submit" className={`${styles.btn} ${styles.btnPrimary}`}>
           Enregistrer

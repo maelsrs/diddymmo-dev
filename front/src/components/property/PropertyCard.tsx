@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { MapPin, Maximize2, Heart } from "lucide-react";
 import Badge from "../ui/Badge";
 import { useApp } from "../../context/AppContext";
-import type { Property } from "../../data/properties";
+import type { Property } from "../../types/property";
 import styles from "./PropertyCard.module.css";
 
 interface PropertyCardProps {

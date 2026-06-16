@@ -5,7 +5,7 @@ import prisma from "./prisma";
 
 export const authPlugin = new Elysia({ name: "auth-plugin" })
   .use(jwt({ name: "jwt", secret: process.env.JWT_SECRET! }))
-  .derive(async ({ headers, jwt }) => {
+  .derive({ as: "scoped" }, async ({ headers, jwt }) => {
     const auth = headers.authorization;
     if (!auth?.startsWith("Bearer ")) return { authUser: null };
 

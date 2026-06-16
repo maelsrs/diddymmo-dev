@@ -18,10 +18,23 @@ export default function AdminTickets() {
   const api = useApi();
   const [tickets, setTickets] = useState<any[]>([]);
   const [filter, setFilter] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
+    setLoading(true);
     const qs = filter ? `?status=${filter}` : "";
-    api.get(`/tickets${qs}`).then((r) => r.ok && setTickets(r.data));
+    api
+      .get(`/tickets${qs}`)
+      .then((r) => {
+        if (r.ok) {
+          setTickets(r.data);
+          setError("");
+        } else {
+          setError(r.data?.error || "Impossible de charger les tickets");
+        }
+      })
+      .finally(() => setLoading(false));
   }, [filter]);
 
   return (
@@ -35,45 +48,54 @@ export default function AdminTickets() {
           <option value="CLOSED">Fermé</option>
         </select>
       </div>
-      <table className={styles.table}>
-        <thead>
-          <tr>
-            <th>Sujet</th>
-            <th>Utilisateur</th>
-            <th>Bien</th>
-            <th>Statut</th>
-            <th>Messages</th>
-            <th>Mis à jour</th>
-          </tr>
-        </thead>
-        <tbody>
-          {tickets.map((t) => (
-            <tr key={t.id}>
-              <td>
-                <Link
-                  to={`/admin/tickets/${t.id}`}
-                  style={{ color: "#4a7fb5", fontWeight: 500 }}
-                >
-                  {t.subject}
-                </Link>
-              </td>
-              <td>{t.user?.name}</td>
-              <td>
-                {t.property ? `${t.property.address}, ${t.property.city}` : "—"}
-              </td>
-              <td>
-                <span
-                  className={`${styles.badge} ${STATUS_BADGE[t.status] ?? styles.badgeGray}`}
-                >
-                  {STATUS_LABELS[t.status] ?? t.status}
-                </span>
-              </td>
-              <td>{t._count?.messages ?? 0}</td>
-              <td>{new Date(t.updatedAt).toLocaleDateString("fr-FR")}</td>
+      {error && <p className={styles.error}>{error}</p>}
+      {loading ? (
+        <p>Chargement…</p>
+      ) : tickets.length === 0 ? (
+        <p>Aucun ticket.</p>
+      ) : (
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th>Sujet</th>
+              <th>Utilisateur</th>
+              <th>Bien</th>
+              <th>Statut</th>
+              <th>Messages</th>
+              <th>Mis à jour</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {tickets.map((t) => (
+              <tr key={t.id}>
+                <td>
+                  <Link
+                    to={`/admin/tickets/${t.id}`}
+                    style={{ color: "#4a7fb5", fontWeight: 500 }}
+                  >
+                    {t.subject}
+                  </Link>
+                </td>
+                <td>{t.user?.name}</td>
+                <td>
+                  {t.property
+                    ? `${t.property.address}, ${t.property.city}`
+                    : "—"}
+                </td>
+                <td>
+                  <span
+                    className={`${styles.badge} ${STATUS_BADGE[t.status] ?? styles.badgeGray}`}
+                  >
+                    {STATUS_LABELS[t.status] ?? t.status}
+                  </span>
+                </td>
+                <td>{t._count?.messages ?? 0}</td>
+                <td>{new Date(t.updatedAt).toLocaleDateString("fr-FR")}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 }
