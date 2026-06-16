@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { useApi } from "../../hooks/useApi";
 import styles from "./Client.module.css";
 
@@ -31,7 +32,12 @@ export default function ClientDashboard() {
         </p>
       ) : (
         properties.map((p) => (
-          <div key={p.id} className={styles.card}>
+          <Link
+            key={p.id}
+            to={`/espace-client/biens/${p.id}`}
+            className={styles.card}
+            style={{ display: "block", textDecoration: "none", color: "inherit" }}
+          >
             <h3>
               {p.address}, {p.city}
             </h3>
@@ -47,7 +53,10 @@ export default function ClientDashboard() {
             <p>
               Contact : {p.contact?.name} ({p.contact?.email})
             </p>
-          </div>
+            <p className={styles.link} style={{ marginBottom: 0 }}>
+              Voir le détail et le prochain paiement →
+            </p>
+          </Link>
         ))
       )}
     </div>

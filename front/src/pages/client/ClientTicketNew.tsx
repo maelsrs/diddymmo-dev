@@ -1,14 +1,17 @@
 import { useEffect, useState, type FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useApi } from "../../hooks/useApi";
 import styles from "./Client.module.css";
 
 export default function ClientTicketNew() {
   const api = useApi();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [properties, setProperties] = useState<any[]>([]);
   const [subject, setSubject] = useState("");
-  const [propertyId, setPropertyId] = useState("");
+  const [propertyId, setPropertyId] = useState(
+    searchParams.get("property") ?? "",
+  );
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 

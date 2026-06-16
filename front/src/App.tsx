@@ -24,6 +24,7 @@ import AdminDocuments from "./pages/admin/AdminDocuments";
 import AdminTickets from "./pages/admin/AdminTickets";
 import AdminTicketDetail from "./pages/admin/AdminTicketDetail";
 import ClientDashboard from "./pages/client/ClientDashboard";
+import ClientPropertyDetail from "./pages/client/ClientPropertyDetail";
 import ClientDocuments from "./pages/client/ClientDocuments";
 import ClientTickets from "./pages/client/ClientTickets";
 import ClientTicketNew from "./pages/client/ClientTicketNew";
@@ -50,6 +51,10 @@ export default function App() {
         <Route element={<RequireAuth />}>
           <Route element={<ClientLayout />}>
             <Route path="/espace-client" element={<ClientDashboard />} />
+            <Route
+              path="/espace-client/biens/:id"
+              element={<ClientPropertyDetail />}
+            />
             <Route
               path="/espace-client/documents"
               element={<ClientDocuments />}

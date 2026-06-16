@@ -35,7 +35,11 @@ export default function PropertyGrid({
       .get("/real-estate")
       .then((r) => {
         if (r.ok) {
-          setProperties((r.data as any[]).map(mapProperty));
+          setProperties(
+            (r.data as any[])
+              .filter((p) => p.status === "DISPONIBLE")
+              .map(mapProperty),
+          );
           setError("");
         } else {
           setError("Impossible de charger les biens");
