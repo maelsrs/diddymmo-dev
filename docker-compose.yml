@@ -16,5 +16,34 @@ services:
       timeout: 5s
       retries: 10
 
+  backend:
+    build: ./backend
+    container_name: diddymmo-backend
+    ports:
+      - "8080:8080"
+    environment:
+      DATABASE_URL: postgresql://diddymmo:diddymmo@postgres:5432/diddymmo?schema=public
+      JWT_SECRET: change-me
+      RESEND_API_KEY: re_xxx
+      PUBLIC_URL: http://localhost:8080
+      PORT: 8080
+    volumes:
+      - ./backend/uploads:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./front
+      args:
+        VITE_API_URL: http://localhost:8080
+    container_name: diddymmo-frontend
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - backend
+
 volumes:
   postgres-data:
