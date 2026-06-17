@@ -1,7 +1,6 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useParams } from "react-router-dom";
 import { useApi } from "../../hooks/useApi";
-import { useAuth } from "../../context/AuthContext";
 import styles from "./Admin.module.css";
 
 const STATUS_LABELS: Record<string, string> = {
@@ -13,7 +12,6 @@ const STATUS_LABELS: Record<string, string> = {
 export default function AdminTicketDetail() {
   const { id } = useParams();
   const api = useApi();
-  const { user } = useAuth();
   const [ticket, setTicket] = useState<any>(null);
   const [newMessage, setNewMessage] = useState("");
   const [status, setStatus] = useState("");
