@@ -1,7 +1,7 @@
 # diddymmo 🏠
 
 > SOURISSEAU Maël, JAUDINOT Martin, MICHAUX Nicolas
-
+## Infra: https://gitlab.com/lsblk2exa_1/infra_diddymmo
 
 **Plateforme immobilière** pour la gestion de biens en location et à la vente
 ## Fonctionnalités
